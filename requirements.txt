@@ -1,5 +1,4 @@
-line-bot-sdk
-flask
-SpeechRecognition
-pydub
-ffprobe
+line-bot-sdk >= 1.8.0
+flask >= 1.0.2
+SpeechRecognition >= 3.8.1
+pydub >= 0.23.1

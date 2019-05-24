@@ -2,6 +2,7 @@ import os
 import tempfile
 
 from config import Config
+from util.transcription import transcribe
 
 from flask import Flask, request, abort, send_from_directory
 from linebot.exceptions import LineBotApiError, InvalidSignatureError
@@ -39,11 +40,11 @@ def handle_text_message(event):
         line_bot_api.reply_message(event.reply_token,
                                    TextSendMessage(text='1. Enter \'transcription on\' to turn on.\n'
                                                         '2. Enter \'transcription off\' to turn off.'))
-    elif msg == 'transcription on':
+    elif msg == 'on':
         config.transcription_mode = True
         line_bot_api.reply_message(event.reply_token,
                                    TextSendMessage(text='Transcription Mode is turned ON.'))
-    elif msg == 'transcription off':
+    elif msg == 'off':
         config.transcription_mode = False
         line_bot_api.reply_message(event.reply_token,
                                    TextSendMessage(text='Transcription Mode is turned OFF.'))
@@ -62,25 +63,22 @@ def handle_audio_message(event):
     else:
         return
 
+    reply_messages = []
     message_content = line_bot_api.get_message_content(event.message.id)
-    with tempfile.NamedTemporaryFile(dir=config.static_tmp_path, prefix=ext + '-', delete=False) as fp:
+    with tempfile.NamedTemporaryFile(dir=config.static_tmp_path, suffix='.' + ext, delete=False) as fp:
         for chunk in message_content.iter_content():
             fp.write(chunk)
-        tmp_file_path = fp.name
+        dst_path = fp.name
+        dst_name = os.path.basename(dst_path)
+        reply_messages.append(TextSendMessage(text='Save content.'))
+        reply_messages.append(TextSendMessage(text=request.host_url + os.path.join('static', 'tmp', dst_name)))
 
-    dist_path = tmp_file_path + '.' + ext
-    dist_name = os.path.basename(dist_path)
-    os.rename(tmp_file_path, dist_path)
+    # transcription mode is ON
+    if ext == 'm4a' and config.transcription_mode:
+        text = transcribe(dst_path)
+        reply_messages.append(TextSendMessage(text=text))
 
-    line_bot_api.reply_message(
-        event.reply_token, [
-            TextSendMessage(text='Save content.'),
-            TextSendMessage(text=request.host_url + os.path.join('static', 'tmp', dist_name))
-        ]
-    )
-
-    if not config.transcription_mode:
-        return
+    line_bot_api.reply_message(event.reply_token, reply_messages)
 
 
 if __name__ == '__main__':
