@@ -35,45 +35,45 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_text_message(event):
+    print(event)
     msg = event.message.text
+    msg = msg.lower()
     if msg == 'help':
         line_bot_api.reply_message(event.reply_token,
-                                   TextSendMessage(text='1. Enter \'transcription on\' to turn on.\n'
-                                                        '2. Enter \'transcription off\' to turn off.'))
+                                   TextSendMessage(text='1. Enter \"on\" to turn transcription on.\n'
+                                                        '2. Enter \"off\" to turn transcription off.'))
     elif msg == 'on':
         config.transcription_mode = True
         line_bot_api.reply_message(event.reply_token,
-                                   TextSendMessage(text='Transcription Mode is turned ON.'))
+                                   TextSendMessage(text='>> Transcription Mode is turned ON. <<'))
     elif msg == 'off':
         config.transcription_mode = False
         line_bot_api.reply_message(event.reply_token,
-                                   TextSendMessage(text='Transcription Mode is turned OFF.'))
+                                   TextSendMessage(text='>> Transcription Mode is turned OFF. <<'))
 
 
-@handler.add(MessageEvent, message=(ImageMessage, VideoMessage, AudioMessage))
+@handler.add(MessageEvent, message=AudioMessage)
 def handle_audio_message(event):
     print(event)
-    app.logger.info('[receive type]', event.message.type)
-    if isinstance(event.message, ImageMessage):
-        ext = 'jpg'
-    elif isinstance(event.message, VideoMessage):
-        ext = 'mp4'
-    elif isinstance(event.message, AudioMessage):
-        ext = 'm4a'
-    else:
-        return
 
     reply_messages = []
     message_content = line_bot_api.get_message_content(event.message.id)
-    with tempfile.NamedTemporaryFile(dir=config.static_tmp_path, suffix='.' + ext, delete=False) as fp:
+    with tempfile.NamedTemporaryFile(dir=config.static_tmp_path, suffix='.m4a', delete=False) as fp:
         for chunk in message_content.iter_content():
             fp.write(chunk)
 
-    # transcription mode is ON
-    if ext == 'm4a' and config.transcription_mode:
+    if config.transcription_mode:
         text = transcribe(fp.name)
         os.remove(fp.name)
-        reply_messages.append(TextSendMessage(text=text))
+
+        if event.source.type == 'user':
+            reply_messages.append(TextSendMessage(text=text))
+        elif event.source.type == 'room':
+            profile = line_bot_api.get_room_member_profile(event.source.room_id, event.source.user_id)
+            reply_messages.append(TextSendMessage(text='【' + profile.display_name + '】說：\n' + text))
+        elif event.source.type == 'group':
+            profile = line_bot_api.get_group_member_profile(event.source.group_id, event.source.user_id)
+            reply_messages.append(TextSendMessage(text='【' + profile.display_name + '】說：\n' + text))
 
     line_bot_api.reply_message(event.reply_token, reply_messages)
 
