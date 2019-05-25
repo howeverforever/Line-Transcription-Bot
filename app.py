@@ -68,14 +68,11 @@ def handle_audio_message(event):
     with tempfile.NamedTemporaryFile(dir=config.static_tmp_path, suffix='.' + ext, delete=False) as fp:
         for chunk in message_content.iter_content():
             fp.write(chunk)
-        dst_path = fp.name
-        dst_name = os.path.basename(dst_path)
-        reply_messages.append(TextSendMessage(text='Save content.'))
-        reply_messages.append(TextSendMessage(text=request.host_url + os.path.join('static', 'tmp', dst_name)))
 
     # transcription mode is ON
     if ext == 'm4a' and config.transcription_mode:
-        text = transcribe(dst_path)
+        text = transcribe(fp.name)
+        os.remove(fp.name)
         reply_messages.append(TextSendMessage(text=text))
 
     line_bot_api.reply_message(event.reply_token, reply_messages)

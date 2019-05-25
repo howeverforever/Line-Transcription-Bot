@@ -1,6 +1,7 @@
 import os
 import re
 from pydub import AudioSegment
+from opencc import OpenCC
 import speech_recognition as sr
 
 
@@ -21,13 +22,17 @@ def transcribe(file_path):
 
     try:
         text = r.recognize_google(audio, language='zh-TW')
-    except (sr.UnknownValueError, sr.RequestError) as e:
+        cc = OpenCC('s2t')
+        text = cc.convert(text)
+    except sr.UnknownValueError:
+        text = '>> 軟糖無法轉譯 <<'
+    except sr.RequestError as e:
         text = "{0}".format(e)
 
     return text
 
 
 # if __name__ == '__main__':
-#     file_path_ = os.path.join(os.path.dirname(__file__), '..', 'static', 'tmp', 'tmp2vh4owtp.m4a')
+#     file_path_ = os.path.join(os.path.dirname(__file__), '..', 'static', 'tmp', 'tmpdn4o0htm.m4a')
 #
 #     print(transcribe(file_path_))
