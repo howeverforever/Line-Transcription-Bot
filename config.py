@@ -1,5 +1,6 @@
 import os
 import sys
+import boto3
 
 from linebot import LineBotApi, WebhookHandler
 
@@ -19,6 +20,7 @@ class Config(metaclass=Singleton):
         self.transcription_mode = True
 
         self.__setup_channel()
+        self.__connect_database()
         self.__create_static_tmp_dir()
 
     def __setup_channel(self):
@@ -35,6 +37,26 @@ class Config(metaclass=Singleton):
 
         self.line_bot_api = LineBotApi(channel_access_token)
         self.handler = WebhookHandler(channel_secret)
+
+    def __connect_database(self):
+        aws_access_key_id = os.getenv('AWS_ACCESS_KEY_ID', None)
+        aws_secret_access_key = os.getenv('AWS_SECRET_ACCESS_KEY', None)
+        aws_table_name = os.getenv('AWS_TABLE_NAME', None)
+
+        if aws_access_key_id is None:
+            self._app.logger('Specify AWS_ACCESS_KEY_ID as environment variable.')
+            sys.exit(1)
+
+        if aws_secret_access_key is None:
+            self._app.logger('Specify AWS_SECRET_ACCESS_KEY as environment variable.')
+            sys.exit(1)
+
+        if aws_secret_access_key is None:
+            self._app.logger('Specify AWS_TABLE_NAME as environment variable.')
+            sys.exit(1)
+
+        self.table = boto3.resource('dynamodb', region_name='ap-southeast-1').Table(aws_table_name)
+        print(self.table)
 
     def __create_static_tmp_dir(self):
         self.static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')

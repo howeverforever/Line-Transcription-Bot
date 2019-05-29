@@ -3,3 +3,4 @@ flask >= 1.0.2
 SpeechRecognition >= 3.8.1
 pydub >= 0.23.1
 opencc-python-reimplemented >= 0.1.4
+boto3 >= 1.9.156
