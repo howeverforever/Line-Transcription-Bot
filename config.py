@@ -17,7 +17,6 @@ class Singleton(type):
 class Config(metaclass=Singleton):
     def __init__(self, app):
         self._app = app
-        self.transcription_mode = True
 
         self.__setup_channel()
         self.__connect_database()
@@ -28,11 +27,11 @@ class Config(metaclass=Singleton):
         channel_secret = os.getenv('LINE_CHANNEL_SECRET', None)
 
         if channel_access_token is None:
-            self._app.logger('Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.')
+            self._app.logger.info('Specify LINE_CHANNEL_ACCESS_TOKEN as environment variable.')
             sys.exit(1)
 
         if channel_secret is None:
-            self._app.logger('Specify LINE_CHANNEL_SECRET as environment variable.')
+            self._app.logger.info('Specify LINE_CHANNEL_SECRET as environment variable.')
             sys.exit(1)
 
         self.line_bot_api = LineBotApi(channel_access_token)
@@ -44,11 +43,11 @@ class Config(metaclass=Singleton):
         aws_table_name = os.getenv('AWS_TABLE_NAME', None)
 
         if aws_access_key_id is None:
-            self._app.logger('Specify AWS_ACCESS_KEY_ID as environment variable.')
+            self._app.logger.info('Specify AWS_ACCESS_KEY_ID as environment variable.')
             sys.exit(1)
 
         if aws_secret_access_key is None:
-            self._app.logger('Specify AWS_SECRET_ACCESS_KEY as environment variable.')
+            self._app.logger.info('Specify AWS_SECRET_ACCESS_KEY as environment variable.')
             sys.exit(1)
 
         if aws_secret_access_key is None:
@@ -56,7 +55,6 @@ class Config(metaclass=Singleton):
             sys.exit(1)
 
         self.table = boto3.resource('dynamodb', region_name='ap-southeast-1').Table(aws_table_name)
-        print(self.table)
 
     def __create_static_tmp_dir(self):
         self.static_tmp_path = os.path.join(os.path.dirname(__file__), 'static', 'tmp')

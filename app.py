@@ -47,15 +47,13 @@ def handle_text_message(event):
                                    TextSendMessage(text='1. Enter \"on\" to turn transcription on.\n'
                                                         '2. Enter \"off\" to turn transcription off.'))
     elif msg == 'on':
-        config.transcription_mode = True
+        is_on = True
         line_bot_api.reply_message(event.reply_token,
                                    TextSendMessage(text='>> Transcription Mode is turned ON. <<'))
-        is_on = True
     elif msg == 'off':
-        config.transcription_mode = False
+        is_on = False
         line_bot_api.reply_message(event.reply_token,
                                    TextSendMessage(text='>> Transcription Mode is turned OFF. <<'))
-        is_on = False
 
     if is_on is not None:
         sha256_id = None
@@ -104,6 +102,9 @@ def handle_join_event(event):
                 'is_on': True
             }
         )
+
+        line_bot_api.reply_message(event.reply_token,
+                                   TextSendMessage(text='Enter \"help\" to catch more information.'))
 
 
 @handler.add(LeaveEvent)
@@ -175,7 +176,3 @@ def handle_audio_message(event):
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
-
-
-
-

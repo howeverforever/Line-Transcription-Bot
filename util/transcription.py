@@ -1,5 +1,4 @@
 import os
-import re
 from pydub import AudioSegment
 from opencc import OpenCC
 import speech_recognition as sr
