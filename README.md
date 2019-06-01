@@ -14,9 +14,9 @@ It can transform audio messages into text for reading conveniently.
 
 ## LINE QR Code
 
-<center> 
-	<img src="./assets/870eimkc.png" height=200 width=200> 
-</center>
+<p align="center">
+	<img src="./assets/870eimkc.png" height="200" width="200"> 
+</p>
 
 </br>
 
@@ -32,10 +32,10 @@ It can transform audio messages into text for reading conveniently.
 
 ## Screenshots
 
-<center>
-	<img src="./assets/screenshot1.png" height=500 width=300>
-	<img src="./assets/screenshot2.png" height=500 width=300>
-</center>
+<p align="center">
+	<img src="./assets/screenshot1.png" height="500" width="300">
+	<img src="./assets/screenshot2.png" height="500" width="300">
+</p>
 
 </br>
 
