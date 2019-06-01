@@ -1,24 +1,48 @@
-# Flask Echo
+# LINE Transcription Soft Candy
 
-Sample echo-bot using [Flask](http://flask.pocoo.org/)
+[![Build Status](https://travis-ci.org/howeverforever/line-transcription-bot.svg?branch=master)](https://travis-ci.org/howeverforever/line-transcription-bot)
 
-## Getting started
+</br>
 
-```
-$ export LINE_CHANNEL_SECRET=YOUR_LINE_CHANNEL_SECRET
-$ export LINE_CHANNEL_ACCESS_TOKEN=YOUR_LINE_CHANNEL_ACCESS_TOKEN
+## Introduction
 
-$ pip install -r requirements.txt
-```
+This is an auxiliary unofficial bot working on LINE app transforming audio into text messages for reading conveniently.
 
-Run WebhookParser sample
+</br>
 
-```
-$ python app.py
-```
+## LINE QR Code
 
-Run WebhookHandler sample
+<img src="./assets/870eimkc.png" height="200" width="200"> 
 
-```
-$ python app_with_handler.py
-```
+</br>
+
+## How to Use
+
+1. Scan above QR code to add **LINE Transcription Soft Candy** as a friend.
+2. Use built-in audio recording feature to send message.
+3. **Soft Candy** will transcript previous audio message and reply the text message.
+
+**NOTE**: all messages on the server will be **deleted** immediately after the candy finishes transcription.
+
+</br>
+
+## Features
+
+1. The candy can be made idle by toggling **on** or **off**.
+2. The candy can transcript all audio messages not only in 1:1 chat, but also in a room or a group.
+3. The candy is familiar with **Chinese** or **Mandarin** languages.
+
+</br>
+
+## Screenshots
+
+<p align="center">
+	<img src="./assets/screenshot1.png" height="500" width="300">
+	<img src="./assets/screenshot2.png" height="500" width="300">
+</p>
+
+</br>
+
+## Lisence
+
+Apache License 2.0
